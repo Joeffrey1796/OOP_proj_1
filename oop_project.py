@@ -4,7 +4,7 @@ OOP database system proj
 
 import typing as tp
 
-class Inventory_Management_System:
+class InventoryManagementSystem:
 
     def __init__(self):
         '''
@@ -12,7 +12,7 @@ class Inventory_Management_System:
         '''
         self.categories: tp.Set[tp.Any] = set()
         self.structure: tp.Dict[str,tp.List[tp.Dict[str,tp.List[int|float]]]] = dict()
-        
+  
     def main_loop(self) -> None:
         '''
         Main Function of the program
@@ -51,14 +51,14 @@ Inventory Management System
             return True
         except ValueError:
             return False
-        
+
     def is_float(self, num: str) -> bool:
         try:
             float(num)
             return True
         except ValueError:
             return False
-        
+
     def add_item(self) -> None:
         item_name: str = input("Enter item name: ")
         category: str = input("Enter category: ")
@@ -95,12 +95,12 @@ Inventory Management System
         if category not in self.categories:
             print("Category not found in the system")
             return None
-        
+
         item: str = input("Enter the name of the item to update: ")
         if not any((item in s_v_dict) for s_v_dict in self.structure[category]):
             print("Item not found in the system")
             return None
-        
+
         update: str|int = input("Enter the quantity change (positive to add, negative to remove): ")
         if self.is_int(update):
             update = int(update)
@@ -113,7 +113,7 @@ Inventory Management System
         else:
             print("Invalid quantity. Please enter a number")
             return None
-        
+
     def delete(self) -> None:
         category: str = input("Enter the category of the item to delete: ")
         if category not in self.categories:
@@ -124,7 +124,7 @@ Inventory Management System
         if not any((item in s_v_dict) for s_v_dict in self.structure[category]):
             print("Item not foudn in the system")
             return None
-        
+
         for s_v_dict in self.structure[category]:
             if item in s_v_dict:
                 s_v_dict.pop(item)
@@ -149,8 +149,5 @@ Inventory Management System
 
 
 if __name__ == "__main__":
-    x = Inventory_Management_System()
+    x = InventoryManagementSystem()
     x.main_loop()
-
-    
-
