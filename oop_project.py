@@ -69,16 +69,16 @@ Inventory Management System
                     print("No duplicate items(update instead of add?)")
                     return None
 
-        quantity: int|str = input("Enter quantity: ")
-        if self.is_int(quantity):
-            quantity = int(quantity)
+        quantity_input:str = input("Enter quantity: ")
+        if self.is_int(quantity_input):
+            quantity:int = int(quantity_input)
         else:
             print("Invalid quantity. Please enter a number")
             return None
 
-        price: float|str = input("Enter price: ")
-        if self.is_float(price):
-            float(price)
+        price_input:str = input("Enter price: ")
+        if self.is_float(price_input):
+            price:float = float(price_input)
         else:
             print("Invalid quantity. Please enter a number")
             return None
@@ -101,9 +101,9 @@ Inventory Management System
             print("Item not found in the system")
             return None
 
-        update: str|int = input("Enter the quantity change (positive to add, negative to remove): ")
-        if self.is_int(update):
-            update = int(update)
+        update_input: str = input("Enter the quantity change (positive to add, negative to remove): ")
+        if self.is_int(update_input):
+            update:int = int(update_input)
             for s_v_dict in self.structure[category]:
                 if item in s_v_dict:
                     s_v_dict[item][0] += update
