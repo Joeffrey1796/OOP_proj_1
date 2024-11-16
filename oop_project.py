@@ -1,16 +1,20 @@
 '''
-OOP database system proj
+OOP database system project
+#Todo: Fix console output formatting
+#Todo: Add Category deleter
+#Todo: Testing and Bugfixes
 '''
 
 class InventoryManagementSystem:
     '''
-    class of the project
+    Class of the system
     '''
 
     def __init__(self):
         '''
         Class Constructor
         '''
+
         self.categories: set[str] = set()
         self.structure: dict[str,list[dict[str,list[int|float]]]] = dict()
 
@@ -88,6 +92,9 @@ Inventory Management System
         quantity_input:str = input("Enter quantity: ")
         if self.is_int(quantity_input):
             quantity:int = int(quantity_input)
+            if quantity < 0:
+                print("Quantity must be equal to or greater than 0")
+                return None
         else:
             print("Invalid quantity. Please enter a number")
             return None
@@ -95,6 +102,9 @@ Inventory Management System
         price_input:str = input("Enter price: ")
         if self.is_float(price_input):
             price:float = float(price_input)
+            if price < 0:
+                print("Price must be equal to or greater than 0")
+                return None
         else:
             print("Invalid quantity. Please enter a number")
             return None
@@ -110,7 +120,7 @@ Inventory Management System
         '''
         Prompts the user to enter the necessary params and
         updates the quantity by adding the `update` input
-          to the existing data
+        to the existing data
         '''
 
         category: str = input("Enter the category of the item to update: ")
@@ -126,21 +136,38 @@ Inventory Management System
         update_input: str = input(
             "Enter the quantity change (positive to add, negative to remove): ")
 
-        if self.is_int(update_input):
-            update:int = int(update_input)
-            for s_v_dict in self.structure[category]:
-                if item in s_v_dict:
-                    s_v_dict[item][0] += update
-                    print(f"Item '{item}' quantity updated to {s_v_dict[item][0]}")
-                else:
-                    print("Item is not in the inventory")
-        else:
+        if not self.is_int(update_input):
             print("Invalid quantity. Please enter a number")
             return None
 
+        update:int = int(update_input)
+        for s_v_dict in self.structure[category]:
+            if s_v_dict[item][0] + update < 0:
+                choice:str = input("""
+Quantity must be positive.
+Delete instead? (enter `y` to contiue): """).lower()
+
+                if choice == 'y':
+                    self.item_deleter(category,item)
+                else:
+                    s_v_dict[item][0] += update
+                    print(f"Item `{item}` quantity updated to {s_v_dict[item][0]}")
+
+    def item_deleter(self,category: str, item: str) -> None:
+        '''
+        Helper function that removes an item from the data structure
+        '''
+
+        for s_v_dict in self.structure[category]:
+            if item in s_v_dict:
+                s_v_dict.pop(item)
+                print(f"{item} removed from the inventory")
+            else:
+                print("Item is not in the inventory")
+
     def delete(self) -> None:
         '''
-        Function that removes an existing item from the data structure
+        Function that prompts the user to delete a specific item
         '''
 
         category: str = input("Enter the category of the item to delete: ")
@@ -153,12 +180,7 @@ Inventory Management System
             print("Item not foudn in the system")
             return None
 
-        for s_v_dict in self.structure[category]:
-            if item in s_v_dict:
-                s_v_dict.pop(item)
-                print(f"{item} removed from the inventory")
-            else:
-                print("Item is not in the inventory")
+        self.item_deleter(category,item)
 
     def display(self) -> None:
         '''
@@ -172,7 +194,7 @@ Inventory Management System
         '''
 
         for s_key, s_value in self.structure.items():
-            print(f"Categofy: {s_key}")
+            print(f"Category: {s_key}")
             for s_v_list in s_value:
                 for s_v_key, s_v_value in s_v_list.items():
                     print(f"\t{s_v_key}:\tQuatity = {s_v_value[0]},\tPrice = {s_v_value[1]}")
@@ -186,10 +208,10 @@ Inventory Management System
         '''
 
         print("Inventory summary report:")
-        print(f"Total unique categories: {len(self.categories)}")
+        print(f"Total unique categories: {len(self.categories)}",end="\n\n")
 
         for key,value in self.structure.items():
-            print(f"Category: '{key};: {len(value)} unique items")
+            print(f"Category `{key}`: {len(value)} unique items")
 
 
 if __name__ == "__main__":
