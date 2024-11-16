@@ -2,17 +2,18 @@
 OOP database system proj
 '''
 
-import typing as tp
-
 class InventoryManagementSystem:
+    '''
+    class of the project
+    '''
 
     def __init__(self):
         '''
         Class Constructor
         '''
-        self.categories: tp.Set[tp.Any] = set()
-        self.structure: tp.Dict[str,tp.List[tp.Dict[str,tp.List[int|float]]]] = dict()
-  
+        self.categories: set[str] = set()
+        self.structure: dict[str,list[dict[str,list[int|float]]]] = dict()
+
     def main_loop(self) -> None:
         '''
         Main Function of the program
@@ -46,6 +47,11 @@ Inventory Management System
                 print("Invalid option. Please choose a valid option.")
 
     def is_int(self, num: str) -> bool:
+        '''
+        Check if an argumnt can be converted to type `int` 
+        and returns a boolean
+        '''
+
         try:
             int(num)
             return True
@@ -53,6 +59,11 @@ Inventory Management System
             return False
 
     def is_float(self, num: str) -> bool:
+        '''
+        Check if an argumnt can be converted to type `float` 
+        and returns a boolean
+        '''
+
         try:
             float(num)
             return True
@@ -60,6 +71,11 @@ Inventory Management System
             return False
 
     def add_item(self) -> None:
+        '''
+        Prompts the user to input the necessary params 
+        create/add items in the inventory system
+        '''
+
         item_name: str = input("Enter item name: ")
         category: str = input("Enter category: ")
 
@@ -91,6 +107,12 @@ Inventory Management System
             self.structure[category].append({item_name:[quantity,price]})
 
     def edit(self) -> None:
+        '''
+        Prompts the user to enter the necessary params and
+        updates the quantity by adding the `update` input
+          to the existing data
+        '''
+
         category: str = input("Enter the category of the item to update: ")
         if category not in self.categories:
             print("Category not found in the system")
@@ -101,7 +123,9 @@ Inventory Management System
             print("Item not found in the system")
             return None
 
-        update_input: str = input("Enter the quantity change (positive to add, negative to remove): ")
+        update_input: str = input(
+            "Enter the quantity change (positive to add, negative to remove): ")
+
         if self.is_int(update_input):
             update:int = int(update_input)
             for s_v_dict in self.structure[category]:
@@ -115,6 +139,10 @@ Inventory Management System
             return None
 
     def delete(self) -> None:
+        '''
+        Function that removes an existing item from the data structure
+        '''
+
         category: str = input("Enter the category of the item to delete: ")
         if category not in self.categories:
             print("Category not found in the system")
@@ -133,6 +161,16 @@ Inventory Management System
                 print("Item is not in the inventory")
 
     def display(self) -> None:
+        '''
+        Function that shows the data structure in this format:
+            Category A:
+                {Item 1}  Quality = {value}     Price = {value}
+            Category B:
+                {Item 1}  Quality = {value}     Price = {value}
+            
+        and so on
+        '''
+
         for s_key, s_value in self.structure.items():
             print(f"Categofy: {s_key}")
             for s_v_list in s_value:
@@ -141,11 +179,17 @@ Inventory Management System
             print()
 
     def summary(self) -> None:
+        '''
+        Function that prints out all of the unique elements of the data structure based on;
+        1. No. of categories
+        2. No. of items in each category
+        '''
+
         print("Inventory summary report:")
         print(f"Total unique categories: {len(self.categories)}")
 
-        for key in self.structure:
-            print(f"Category: '{key};: {len(self.structure[key])} unique items")
+        for key,value in self.structure.items():
+            print(f"Category: '{key};: {len(value)} unique items")
 
 
 if __name__ == "__main__":
