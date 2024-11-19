@@ -3,7 +3,7 @@ OOP database system project
 #Todo: Fix console output formatting
 #Todo: Add Category deleter
 #Todo: Testing and Bugfixes
-#Todo: Fix bug on Summary Report
+#//: //Fix bug on Summary Report
 #Todo: Remove Category if empty?
 '''
 
@@ -167,6 +167,10 @@ Delete instead? (enter `y` to contiue): """).lower()
             else:
                 print("Item is not in the inventory")
 
+        #! Hot fix for empty list but counts 1 error
+        if self.structure[category] == [{}]:
+            self.structure[category].clear()
+
     def delete(self) -> None:
         '''
         Function that prompts the user to delete a specific item
@@ -194,7 +198,6 @@ Delete instead? (enter `y` to contiue): """).lower()
             
         and so on
         '''
-
         for s_key, s_value in self.structure.items():
             print(f"Category: {s_key}")
             for s_v_list in s_value:
@@ -211,6 +214,7 @@ Delete instead? (enter `y` to contiue): """).lower()
 
         print("Inventory summary report:")
         print(f"Total unique categories: {len(self.categories)}",end="\n\n")
+        print(self.structure)
 
         for key,value in self.structure.items():
             print(f"Category `{key}`: {len(value)} unique items")
