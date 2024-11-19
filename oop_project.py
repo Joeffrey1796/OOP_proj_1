@@ -3,6 +3,8 @@ OOP database system project
 #Todo: Fix console output formatting
 #Todo: Add Category deleter
 #Todo: Testing and Bugfixes
+#Todo: Fix bug on Summary Report
+#Todo: Remove Category if empty?
 '''
 
 class InventoryManagementSystem:
