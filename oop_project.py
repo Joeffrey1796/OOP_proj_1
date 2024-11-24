@@ -1,10 +1,9 @@
 '''
 OOP database system project
 #Todo: Fix console output formatting
-#Todo: Add Category deleter
 #Todo: Testing and Bugfixes
-#//: //Fix bug on Summary Report
 #Todo: Remove Category if empty?
+#Todo: input starts with spaces and item is already in inventory but wihtout spaces?
 '''
 
 class InventoryManagementSystem:
@@ -18,7 +17,8 @@ class InventoryManagementSystem:
         '''
 
         self.categories: set[str] = set()
-        self.structure: dict[str,list[dict[str,list[int|float]]]] = dict()
+        self.inventory: dict[str,dict[str,list[int|float]]] = dict()
+        self.transactions: list[str] = list()
 
     def main_loop(self) -> None:
         '''
@@ -33,9 +33,10 @@ Inventory Management System
     3. Delete Item
     4. Display Inventory by Category
     5. Summary Report
-    6. Exit
+    6. Transaction History
+    7. Exit
 """)
-            choice : str = input("\t Choose an option (1-6): ")
+            choice : str = input("\t Choose an option (1-7): ")
 
             if choice == '1':
                 self.add_item()
@@ -48,6 +49,8 @@ Inventory Management System
             elif choice == '5':
                 self.summary()
             elif choice == '6':
+                self.show_transactions()
+            elif choice == '7':
                 break
             else:
                 print("Invalid option. Please choose a valid option.")
@@ -82,41 +85,97 @@ Inventory Management System
         create/add items in the inventory system
         '''
 
-        item_name: str = input("Enter item name: ")
-        category: str = input("Enter category: ")
+        item: str = input("Enter item name: ")
 
-        if category in self.categories:
-            for s_dict in self.structure[category]:
-                if item_name in s_dict:
-                    print("No duplicate items(update instead of add?)")
-                    return None
+        #! Whiespace as name error
+        if item.strip() == "":
+            print("Item must have a name")
+            return None
+
+        #! Whiespace as name error
+        category: str = input("Enter category: ")
+        if category.strip() == "":
+            print("Category must have a name")
+            return None
+
+        #! Item already exists in the categry error
+        if (category in self.categories) and (item in self.inventory[category]):
+            choice: str = input("No duplicate items(enter `y` to update instead): ").lower()
+            if choice == 'y':
+                self.item_edit(category,item)
+            return None
 
         quantity_input:str = input("Enter quantity: ")
-        if self.is_int(quantity_input):
-            quantity:int = int(quantity_input)
-            if quantity < 0:
-                print("Quantity must be equal to or greater than 0")
-                return None
-        else:
+
+        #! Quantity not an integer input error
+        if not self.is_int(quantity_input):
             print("Invalid quantity. Please enter a number")
+            return None
+
+        quantity:int = int(quantity_input)
+
+        #! Quantity is less than 0 error
+        if quantity < 0:
+            print("Quantity must be equal to or greater than 0")
             return None
 
         price_input:str = input("Enter price: ")
-        if self.is_float(price_input):
-            price:float = float(price_input)
-            if price < 0:
-                print("Price must be equal to or greater than 0")
-                return None
+
+        #! Price not float type input error
+        if not self.is_float(price_input):
+            print("Invalid quantity. Please enter a number")
+            return None
+        price:float = float(price_input)
+
+        #! Price is less than 0 error
+        if price < 0:
+            print("Price must be equal to or greater than 0")
+            return None
+
+        #* Adding item to inventory based if item is already known
+        if category not in self.categories:
+            self.categories.add(category)
+            self.inventory[category] = {item: [quantity, price]}
+            transaction: str  = (
+f"Created `{category}` with item: `{item}` that has quantity: {quantity} and price: {price} "                                 
+                                 )
         else:
+            self.inventory[category][item] = [quantity,price]
+            transaction = (
+f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} " 
+                           )
+
+        self.update_transactions(transaction)
+
+
+    def item_edit(self,category:str, item:str):
+        '''
+        Helper function that chanages quantity of an item
+        '''
+
+        update_input: str = input(
+            "Enter the quantity change (positive to add, negative to remove): ")
+
+        #! Check if input is int
+        if not self.is_int(update_input):
             print("Invalid quantity. Please enter a number")
             return None
 
+        update:int = int(update_input)
 
-        if category not in self.categories:
-            self.categories.add(category)
-            self.structure[category] = [{item_name: [quantity, price]}]
-        else:
-            self.structure[category].append({item_name:[quantity,price]})
+        #! Input results to negative quantity
+        if self.inventory[category][item][0] + update < 0:
+            choice:str = input("Quantity must be equal to or greater than 0.\n"
+                               "Delete instead? (enter `y` to contiue): "
+                               ).lower()
+            if choice == 'y':
+                self.item_deleter(category,item)
+            return None
+
+        #* Updates the quantity of the item
+        self.inventory[category][item][0] += update
+        transaction: str = f"Item `{item}` quantity updated to {self.inventory[category][item][0]}"
+        self.update_transactions(transaction)
 
     def edit(self) -> None:
         '''
@@ -126,50 +185,34 @@ Inventory Management System
         '''
 
         category: str = input("Enter the category of the item to update: ")
+
+        #! Category not found error
         if category not in self.categories:
-            print("Category not found in the system")
+            print("Category not found in the inventory")
             return None
 
+        #! Item not found error
         item: str = input("Enter the name of the item to update: ")
-        if not any((item in s_v_dict) for s_v_dict in self.structure[category]):
-            print("Item not found in the system")
+        if item not in self.inventory[category]:
+            print("Item not found in the inventory")
             return None
 
-        update_input: str = input(
-            "Enter the quantity change (positive to add, negative to remove): ")
-
-        if not self.is_int(update_input):
-            print("Invalid quantity. Please enter a number")
-            return None
-
-        update:int = int(update_input)
-        for s_v_dict in self.structure[category]:
-            if s_v_dict[item][0] + update < 0:
-                choice:str = input("""
-Quantity must be positive.
-Delete instead? (enter `y` to contiue): """).lower()
-
-                if choice == 'y':
-                    self.item_deleter(category,item)
-                else:
-                    s_v_dict[item][0] += update
-                    print(f"Item `{item}` quantity updated to {s_v_dict[item][0]}")
+        self.item_edit(category,item)
 
     def item_deleter(self,category: str, item: str) -> None:
         '''
         Helper function that removes an item from the data structure
         '''
 
-        for s_v_dict in self.structure[category]:
-            if item in s_v_dict:
-                s_v_dict.pop(item)
-                print(f"{item} removed from the inventory")
-            else:
-                print("Item is not in the inventory")
+        #! Error for item not found in inventory
+        if item not in self.inventory[category]:
+            print("Item is not in the inventory")
 
-        #! Hot fix for empty list but counts 1 error
-        if self.structure[category] == [{}]:
-            self.structure[category].clear()
+        #* Remove the item from the inventory
+        self.inventory[category].pop(item)
+        transaction: str = f"{item} removed from the inventory"
+        self.update_transactions(transaction)
+
 
     def delete(self) -> None:
         '''
@@ -177,13 +220,16 @@ Delete instead? (enter `y` to contiue): """).lower()
         '''
 
         category: str = input("Enter the category of the item to delete: ")
-        if category not in self.categories:
-            print("Category not found in the system")
-            return None
-        item: str = input("Enter the name of the item to delete: ")
 
-        if not any((item in s_v_dict) for s_v_dict in self.structure[category]):
-            print("Item not foudn in the system")
+        #! category not found error
+        if category not in self.categories:
+            print("Category not found in the inventory")
+            return None
+
+        item: str = input("Enter the name of the item to delete: ")
+        #! item not found error
+        if not item in self.inventory[category]:
+            print("Item not found in the inventory")
             return None
 
         self.item_deleter(category,item)
@@ -198,11 +244,10 @@ Delete instead? (enter `y` to contiue): """).lower()
             
         and so on
         '''
-        for s_key, s_value in self.structure.items():
-            print(f"Category: {s_key}")
-            for s_v_list in s_value:
-                for s_v_key, s_v_value in s_v_list.items():
-                    print(f"\t{s_v_key}:\tQuatity = {s_v_value[0]},\tPrice = {s_v_value[1]}")
+        for category, s_value in self.inventory.items():
+            print(f"Category: {category}")
+            for item_name, item_value in s_value.items():
+                print(f"\t{item_name}:\tQuatity = {item_value[0]},\tPrice = {item_value[1]}")
             print()
 
     def summary(self) -> None:
@@ -214,12 +259,30 @@ Delete instead? (enter `y` to contiue): """).lower()
 
         print("Inventory summary report:")
         print(f"Total unique categories: {len(self.categories)}",end="\n\n")
-        print(self.structure)
+        # print(self.inventory)
 
-        for key,value in self.structure.items():
+        for key,value in self.inventory.items():
             print(f"Category `{key}`: {len(value)} unique items")
+
+    def update_transactions(self, transaction: str):
+        '''
+        Prints out and update the transaction history
+        '''
+
+        print(transaction)
+        self.transactions.append(transaction)
+
+    def show_transactions(self) -> None:
+        '''
+        Show all transaction history
+        '''
+
+        print("Transaction history:")
+        for i, transaction in enumerate(self.transactions):
+            print(f"\t{i+1}. {transaction}")
 
 
 if __name__ == "__main__":
+    print("\033c") #? Hide filepath when running script
     x = InventoryManagementSystem()
     x.main_loop()
