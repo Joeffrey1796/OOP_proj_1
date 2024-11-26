@@ -3,7 +3,6 @@ OOP database system project
 #Todo: Fix console output formatting
 #Todo: Testing and Bugfixes
 #Todo: Remove Category if empty?
-#Todo: input starts with spaces and item is already in inventory but wihtout spaces?
 '''
 
 class InventoryManagementSystem:
@@ -79,6 +78,24 @@ Inventory Management System
         except ValueError:
             return False
 
+    def is_valid_name(self, string: str) -> bool:
+        '''
+        Helper function that checks if inputted string is valid 
+        '''
+
+        #! Empty string input
+        if string.strip() == "":
+            print("Name cannot be empty")
+            return False
+
+        #! First letter is not alnum
+        if string[0].isalnum():
+            print("Name must start with an alphanumeric character")
+            return False
+
+        return True
+
+
     def add_item(self) -> None:
         '''
         Prompts the user to input the necessary params 
@@ -87,15 +104,17 @@ Inventory Management System
 
         item: str = input("Enter item name: ")
 
-        #! Whiespace as name error
-        if item.strip() == "":
-            print("Item must have a name")
+        #! Item name errors
+        if not self.is_valid_name(item):
+            item = item.rstrip()
             return None
 
-        #! Whiespace as name error
+
         category: str = input("Enter category: ")
-        if category.strip() == "":
-            print("Category must have a name")
+
+        #! Category name errors
+        if not self.is_valid_name(category):
+            category = category.rstrip()
             return None
 
         #! Item already exists in the categry error
