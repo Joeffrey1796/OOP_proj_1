@@ -89,7 +89,7 @@ Inventory Management System
             return False
 
         #! First letter is not alnum
-        if string[0].isalnum():
+        if not string[0].isalnum():
             print("Name must start with an alphanumeric character")
             return False
 
