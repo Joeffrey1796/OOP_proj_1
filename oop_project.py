@@ -2,7 +2,6 @@
 OOP database system project
 #Todo: Fix console output formatting
 #Todo: Testing and Bugfixes
-#Todo: Remove Category if empty?
 '''
 
 class InventoryManagementSystem:
@@ -36,7 +35,7 @@ Inventory Management System
     7. Delete Category
     8. Exit
 """)
-            choice : str = input("\t Choose an option (1-7): ")
+            choice : str = input("\t Choose an option (1-8): ")
 
             if choice == '1':
                 self.add_item()
