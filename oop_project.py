@@ -33,7 +33,8 @@ Inventory Management System
     4. Display Inventory by Category
     5. Summary Report
     6. Transaction History
-    7. Exit
+    7. Delete Category
+    8. Exit
 """)
             choice : str = input("\t Choose an option (1-7): ")
 
@@ -42,7 +43,7 @@ Inventory Management System
             elif choice == '2':
                 self.edit()
             elif choice == '3':
-                self.delete()
+                self.delete_item()
             elif choice == '4':
                 self.display()
             elif choice == '5':
@@ -50,6 +51,8 @@ Inventory Management System
             elif choice == '6':
                 self.show_transactions()
             elif choice == '7':
+                self.delete_category()
+            elif choice == '8':
                 break
             else:
                 print("Invalid option. Please choose a valid option.")
@@ -226,14 +229,22 @@ f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} 
         #! Error for item not found in inventory
         if item not in self.inventory[category]:
             print("Item is not in the inventory")
+        
 
         #* Remove the item from the inventory
         self.inventory[category].pop(item)
+
+        #? Prompts the user to delete a category if empty after deletion
+        if not self.inventory[category]:
+            choice: str = input("Category will have 0 unique items. Delete it(Enter `y`): ").lower()
+            if choice == 'y':
+                self.delete_category(category)
+
         transaction: str = f"{item} removed from the inventory"
         self.update_transactions(transaction)
 
 
-    def delete(self) -> None:
+    def delete_item(self) -> None:
         '''
         Function that prompts the user to delete a specific item
         '''
@@ -299,6 +310,24 @@ f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} 
         print("Transaction history:")
         for i, transaction in enumerate(self.transactions):
             print(f"\t{i+1}. {transaction}")
+
+    def delete_category(self,category: str|None = None) -> None:
+        '''
+        Function that deletes a category
+        '''
+
+        if not category:
+            category = input("Enter the category to delete: ")
+
+        if category not in self.categories:
+            print("Category not found in the inventory")
+            return None
+
+        transaction: str = (
+f"category: `{category}` with {len(self.inventory[category])} unique item/s deleted"
+                           )
+        self.inventory.pop(category)
+        self.update_transactions(transaction)
 
 
 if __name__ == "__main__":
