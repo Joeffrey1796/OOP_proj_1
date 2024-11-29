@@ -229,18 +229,22 @@ f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} 
         if item not in self.inventory[category]:
             print("Item is not in the inventory")
         
-
-        #* Remove the item from the inventory
-        self.inventory[category].pop(item)
-
         #? Prompts the user to delete a category if empty after deletion
-        if not self.inventory[category]:
+        if len(self.inventory[category]) == 1:
             choice: str = input("Category will have 0 unique items. Delete it(Enter `y`): ").lower()
             if choice == 'y':
+                #* Remove category from the inventory
                 self.delete_category(category)
-
-        transaction: str = f"{item} removed from the inventory"
-        self.update_transactions(transaction)
+            else:
+                #* Remove the item from the inventory
+                self.inventory[category].pop(item)
+                transaction: str = f"{item} removed from the inventory"
+                self.update_transactions(transaction)
+        else:
+            #* Remove the item from the inventory
+            self.inventory[category].pop(item)
+            transaction = f"{item} removed from the inventory"
+            self.update_transactions(transaction)
 
 
     def delete_item(self) -> None:
