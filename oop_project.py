@@ -52,6 +52,7 @@ Inventory Management System
             elif choice == '7':
                 self.delete_category()
             elif choice == '8':
+                print("Exiting Inventory Management System.")
                 break
             else:
                 print("Invalid option. Please choose a valid option.")
@@ -289,7 +290,7 @@ f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} 
 
         print("Inventory summary report:")
         print(f"Total unique categories: {len(self.categories)}",end="\n\n")
-        # print(self.inventory)
+        # print(self.inventory) #? Debugging
 
         for key,value in self.inventory.items():
             print(f"Category `{key}`: {len(value)} unique items")
