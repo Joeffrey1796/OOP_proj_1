@@ -104,19 +104,16 @@ Inventory Management System
         create/add items in the inventory system
         '''
 
-        item: str = input("Enter item name: ")
+        item: str = input("Enter item name: ").rstrip()
 
         #! Item name errors
         if not self.is_valid_name(item):
-            item = item.rstrip()
             return None
 
-
-        category: str = input("Enter category: ")
+        category: str = input("Enter category: ").rstrip()
 
         #! Category name errors
         if not self.is_valid_name(category):
-            category = category.rstrip()
             return None
 
         #! Item already exists in the categry error
