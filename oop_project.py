@@ -155,12 +155,12 @@ Inventory Management System
             self.categories.add(category)
             self.inventory[category] = {item: [quantity, price]}
             transaction: str  = (
-f"Created `{category}` with item: `{item}` that has quantity: {quantity} and price: {price} "                                 
+f"Created `{category}` with item: `{item}` that has quantity: {quantity} and price: {price} "
                                  )
         else:
             self.inventory[category][item] = [quantity,price]
             transaction = (
-f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} " 
+f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} "
                            )
 
         self.update_transactions(transaction)
@@ -225,7 +225,7 @@ f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} 
         #! Error for item not found in inventory
         if item not in self.inventory[category]:
             print("Item is not in the inventory")
-        
+
         #? Prompts the user to delete a category if empty after deletion
         if len(self.inventory[category]) == 1:
             choice: str = input("Category will have 0 unique items. Delete it(Enter `y`): ").lower()
@@ -326,6 +326,7 @@ f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} 
         transaction: str = (
 f"category: `{category}` with {len(self.inventory[category])} unique item/s deleted"
                            )
+        self.categories.remove(category)
         self.inventory.pop(category)
         self.update_transactions(transaction)
 
