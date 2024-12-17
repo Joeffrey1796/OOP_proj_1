@@ -70,10 +70,6 @@ def scrollable(master_root,width, height,row,collumn, **kwargs):
 
 def add_item():
 
-    image_path = os.path.join(base_dir, "Source", "bopcat_button.png")
-    image = Image.open(image_path)
-    photo = ImageTk.PhotoImage(image)
-
     def add_item_process():
         result = logic.add_item(category_entry.get(),item_entry.get(),quantity_entry.get(),price_entry.get())
         # print(result)
@@ -339,18 +335,20 @@ def show_search(search_term,master_root):
 
 
 def search(search_term):
-    if search_term in logic.categories:
-        text = ""  # Start with an empty string
-        for i in logic.inventory[search_term].keys():
-            text += f"{i}\n"  # Add 4 spaces before each line
-        text = text.strip("\n")  # Remove the trailing newline
-        
-        return ("category", text)
 
     for category, item in logic.inventory.items():
         if search_term in item:
             y = logic.inventory[category][search_term]
             return ("item", f"Quantity: {y[0]}\nPrice: {y[1]}")
+        
+    if search_term in logic.categories:
+        text = ""  
+        for i in logic.inventory[search_term].keys():
+            text += f"{i}\n"  
+        text = text.strip("\n")  
+        
+        return ("category", text)
+
 
     return (None, "404: Not found")
 
