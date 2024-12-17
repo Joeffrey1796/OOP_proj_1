@@ -1,0 +1,38 @@
+import tkinter as tk
+from PIL import Image, ImageTk
+
+def main():
+    # Create the main window
+    root = tk.Tk()
+    root.title("Tkinter with Background Image Overlapping Widgets")
+
+    # Load the image
+    image_path = r"C:\\Users\\Admin\\Desktop\\python\\OOP_finalproj\\OOP_proj_1\\Source\\Inventory_Management_System2.png"  # Replace with your image file path
+    image = Image.open(image_path)
+
+    # Resize the image to fit the window (optional)
+    image = image.resize((800, 600), Image.Resampling.LANCZOS)
+    background_image = ImageTk.PhotoImage(image)
+
+    # Create a canvas and set the background image
+    canvas = tk.Canvas(root, width=800, height=600)
+    canvas.pack(fill="both", expand=True)
+
+    # Set the background image
+    canvas.create_image(0, 0, image=background_image, anchor="nw")
+
+    # Add other widgets on top of the background image
+    label = tk.Label(root, text="Hello, Tkinter!", font=("Arial", 24), fg="white", bg="black")
+    label.place(x=350, y=250)
+
+    button = tk.Button(root, text="Click Me", font=("Arial", 14))
+    button.place(x=350, y=300)
+
+    # Keep a reference to the image to prevent garbage collection
+    canvas.image = background_image
+
+    # Run the application
+    root.mainloop()
+
+if __name__ == "__main__":
+    main()

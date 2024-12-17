@@ -195,6 +195,8 @@ f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} 
         transaction: str = f"Item `{item}` quantity updated to {self.inventory[category][item][0]}"
         self.update_transactions(transaction)
 
+        return transaction
+
     def edit(self,category,item) -> str:
         '''
         Prompts the user to enter the necessary params and
@@ -266,18 +268,34 @@ f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} 
         '''
         Function that shows the data structure in this format:
             Category A:
-                {Item 1}  Quality = {value}     Price = {value}
+                {Item 1}   Quantity = {value}    Price = {value}
             Category B:
-                {Item 1}  Quality = {value}     Price = {value}
-            
-        and so on
+                {Item 1}   Quantity = {value}    Price = {value}
         '''
         texts = []
+        # max_item_length = max(
+        #     len(item) for category in self.inventory.values() for item in category
+        # )
+
+        max_item_length = 0 
+
+        for category in self.inventory.values():  
+            for item in category.keys():          
+                item_length = len(item)          
+                max_item_length = max(max_item_length, item_length)
+
+        column_width_item = max_item_length + 5     
+
         for category, s_value in self.inventory.items():
             texts.append(f"Category: {category}")
             for item_name, item_value in s_value.items():
-                texts.append(f"\t{item_name}:\tQuatity = {item_value[0]},\tPrice = {item_value[1]}")
-            texts.append("")
+                
+                item_text = item_name.ljust(column_width_item)
+                quantity_text = f"Quantity = {item_value[0]}".ljust(20)
+                price_text = f"Price = {item_value[1]}".ljust(20)
+                texts.append("    " + item_text + quantity_text + price_text)
+            texts.append("")  # Blank line for spacing
+        
         return texts
 
     def summary(self) -> list[str]:
@@ -292,7 +310,7 @@ f"Added `{item}` to `{category}` with a quantity: {quantity} and price: {price} 
         # print(self.inventory) #? Debugging
 
         for key,value in self.inventory.items():
-            text.append(f"Category `{key}`: {len(value)} unique items")
+            text.append(f"Category `{key}`: {len(value)} unique items".ljust(50))
         
         return text
 

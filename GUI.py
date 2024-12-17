@@ -2,12 +2,14 @@ import tkinter as tk
 from tkinter import messagebox
 import oop_project as oop
 import sampledata
+from PIL import Image, ImageTk
 
 
 #todo: remove global scope
 #todo: PEP-8
 #todo: class
 
+FONT = ("Courier", 10)
 
 def destroy_widget_children(master):
     for widget in master.winfo_children():
@@ -21,7 +23,7 @@ def exit_():
     if pop_up == True:
         root.destroy()
 
-def scrollable(master_root,width, height,row,collumn):
+def scrollable(master_root,width, height,row,collumn, **kwargs):
 
     def adjust_frame_size(event):
         '''
@@ -36,10 +38,10 @@ def scrollable(master_root,width, height,row,collumn):
             canvas.yview_scroll(int(-1 * (event.delta / 120)), "units")
 
     canvas = tk.Canvas(master_root,width=width,height=height)
-    canvas.grid(row=row, column=collumn, sticky="nsew")
+    canvas.grid(row=row, column=collumn, sticky="nsew", pady=(kwargs.get("pady", 0), 0))
     
     v_scroll = tk.Scrollbar(master_root, orient=tk.VERTICAL, command=canvas.yview)
-    v_scroll.grid(row=row, column=collumn+1, sticky="ns")
+    v_scroll.grid(row=row, column=collumn+1, sticky="ns", **kwargs)
 
     h_scroll = tk.Scrollbar(master_root, orient=tk.HORIZONTAL, command=canvas.xview)
     h_scroll.grid(row=row+1,column=collumn,sticky="ew")
@@ -228,27 +230,28 @@ def delete_inventory_by_category():
 
 
 
+
+
 def display():
     destroy_widget_children(f2)
 
     texts = logic.display()
 
-    longest_text = max(texts,key=len)
-    # print(longest_text)
-    # print(len(longest_text))
+
     for i, text in enumerate(texts):
-        label = tk.Label(master=f2,text=text,width=len(longest_text)+20,anchor="w")
-        label.grid(row=i, column=0, pady=2,)
+        label = tk.Label(master=f2, text=text, anchor="w", font=FONT)
+        label.grid(row=i, column=0, pady=5)
     
 
 def summary_report():
     destroy_widget_children(f2)
 
     texts = logic.summary()
-    longest_text = max(texts,key=len)
+
+
     for i, text in enumerate(texts):
-        label = tk.Label(master=f2,text=text,width=len(longest_text),anchor="center")
-        label.grid(row=i,column=0,pady=2)
+        label = tk.Label(master=f2, text=text, anchor="w", font=FONT)
+        label.grid(row=i, column=0, pady=5, padx=10)
         
 
 def show_transactions():
@@ -277,7 +280,7 @@ def delete_category():
     category_label = tk.Label(master=f2,text="Enter Cagetory:")
     category_entry = tk.Entry(master=f2 )
 
-    # Packing Widgets
+    # Packing Widgets   
     category_label.grid(row=0,column=0,pady=5)
     category_entry.grid(row=0,column=1,pady=5)
 
@@ -299,7 +302,7 @@ def show_search(search_term,master_root):
     if 'show_searched' in globals():
         show_searched.config(text=x)
     else:
-        show_searched = tk.Label(master=master_root, text=x, width=30, height=20,anchor="nw")
+        show_searched = tk.Label(master=master_root, text=x, width=40, height=30,anchor="nw")
         show_searched.grid(row=5, column=0, columnspan=2)
         
 
@@ -319,34 +322,31 @@ def search(search_term):
 
     return (None,"404: Not found")
 
-def main():
-    global root
+def main2():
     global logic
     global f1
     global f2
     global f3
     global f4
 
+    
+
     logic = oop.InventoryManagementSystem()
     # Create Database
     logic.inventory = sampledata.inventory
     logic.categories = sampledata.categories
-
-
-    root = tk.Tk()
-    root.geometry("1280x720")
-    root.title("Inventory Management System")
-    
     # Initialize Widgets
     f1 = tk.LabelFrame(master=root,text = "Choose your input",padx=20,pady=20,labelanchor="n")
-    f2 = scrollable(root,400,100,0,1)
+    f2 = scrollable(root,500,100,0,1, pady=20)
     f3 = tk.LabelFrame(master=root,text="Last Transaction",labelanchor="n")
-    f4 = tk.LabelFrame(master=root)
+    f4 = tk.LabelFrame(master=root, width=50, height=100)
 
     # Pack Widgets
-    f1.grid(row=0, column=0,padx=50)
-    f3.grid(row=1,columnspan=3,padx=50,pady=50)
-    f4.grid(row=0,column=4,padx=50)
+    f1.grid(row=0, column=0,padx=50, pady=20)
+    f3.grid(row=2,column=1, columnspan=3,padx=50,pady=20)
+    f4.grid(row=0,column=4, padx=45)
+
+    
 
     tk.Label(master=f2,text= "Testing frames").pack()
 
@@ -362,14 +362,14 @@ def main():
     longest_text = max(btn_choices, key=lambda b: len(b[0]))
 
     for i, data in enumerate(btn_choices):
-        tk.Button(master=f1,text=data[0], width=len(longest_text[0]) ,command=data[1]).grid(row=i, column=0, padx=5,pady=5)
+        tk.Button(master=f1,text=data[0], width=len(longest_text[0]) ,command=data[1],font=FONT).grid(row=i, column=0, padx=5,pady=5)
 
 
     drop_var = tk.StringVar()
     entry_var = tk.StringVar()
 
-    plotting = scrollable(f4,60,40,2,0)
-    search_label = tk.Label(master=f4,text="Search:")
+    plotting = scrollable(f4,50,325,2,1)
+    search_label = tk.Label(master=f4,text="Search:", anchor="nw")
     search_entry = tk.Entry(master=f4,textvariable=entry_var)
     search_drop = tk.OptionMenu(f4,drop_var,*logic.categories)
     btn_confirm = tk.Button(master=f4, text="Confirm",command=lambda: show_search(search_entry.get(),plotting))
@@ -383,6 +383,43 @@ def main():
     search_entry.grid(row=0,column=1)
     search_drop.grid(row=1,column=0,columnspan=2,sticky="ew")
     btn_confirm.grid(row=0,column=2,rowspan=2,sticky="ns")
+
+
+def main():
+    global root
+    
+
+    
+
+
+    root = tk.Tk()
+    root.geometry("1280x720")
+    root.configure(bg="#76bbb3")
+    root.resizable(0,0)
+    root.iconbitmap(r"C:\\Users\\Admin\\Desktop\\python\\OOP_finalproj\\OOP_proj_1\\Source\\OOP_icon.ico")
+    root.title("Inventory Management System")
+
+    image = Image.open(r"C:\\Users\\Admin\\Desktop\\python\\OOP_finalproj\\OOP_proj_1\\Source\\Inventory_Management_System2.png")
+
+    # Convert to Tkinter format
+    photo = ImageTk.PhotoImage(image)
+
+    # Create a Canvas widget
+    canvas = tk.Canvas(root, width=image.width, height=image.height)
+    canvas.grid(row=0, column=0, sticky="nsew")
+
+    # Add the image to the canvas
+    #canvas.create_image(0, 0, anchor="nw", image=photo)
+    
+    def go_to_main2():
+        canvas.destroy()
+        proceed_button.grid_forget()
+
+        main2()
+
+    proceed_button = tk.Button(root, image=photo, command=go_to_main2)
+    proceed_button.grid(row=0, column=0, sticky="nsew")
+    
 
 
 
