@@ -246,7 +246,7 @@ def delete_inventory_by_category():
 def show_prompt(event):
     # Create the tooltip label dynamically
     global tooltip
-    tooltip = tk.Label(root, text="Positive to add, GIGA_NIGGA to subtract", bg=BG_COLOR, fg="#2F3E46", relief="solid", borderwidth=1, font=("Arial", 9))
+    tooltip = tk.Label(root, text="Positive to add, Negative to subtract", bg=BG_COLOR, fg="#2F3E46", relief="solid", borderwidth=1, font=("Arial", 9))
     tooltip.place(x=event.widget.winfo_rootx() - root.winfo_rootx(), 
                   y=event.widget.winfo_rooty() - root.winfo_rooty() - 25)
 
